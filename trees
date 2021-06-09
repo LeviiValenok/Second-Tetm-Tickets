@@ -1,0 +1,92 @@
+
+#include "Header.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+struct BinaryTree* rootInitialization(struct BinaryTree* root, int data)
+{
+    struct BinaryTree* temp = (struct BinaryTree*)calloc(1, sizeof(struct BinaryTree));
+    temp ->item = data;
+    temp ->left = NULL;
+    temp ->right = NULL;
+    root = temp;
+    return root;
+}
+
+struct BinaryTree* addNode(struct BinaryTree* root, int data)
+{
+    struct BinaryTree* copyOfRoot = root;
+    struct BinaryTree* copyOfParent = NULL;
+    struct BinaryTree* temp = (struct BinaryTree*)calloc(1,sizeof(struct BinaryTree));
+    temp->item = data;
+    while (copyOfRoot != NULL)
+    {
+        copyOfParent = copyOfRoot;
+        if (copyOfRoot->item < data)
+        {
+            copyOfRoot = copyOfRoot->right;
+        }
+        else
+        {
+            copyOfRoot = copyOfRoot->left;
+        }
+    }
+
+    temp->parent = copyOfParent;
+    temp->left = NULL;
+    temp-> right = NULL;
+    if (copyOfParent->item < data)
+    {
+        copyOfParent->right = temp;
+    }
+    else
+    {
+        copyOfParent->left = temp;
+    }
+    return root;
+}
+
+struct BinaryTree* deleteItem(struct BinaryTree* root, int compareNumber)
+{
+
+    if(root == NULL)
+        return root;
+
+    if(compareNumber == root->item)
+    {
+
+        struct BinaryTree *temp;
+        if(root->right == NULL)
+            temp = root->left;
+        else
+        {
+            struct BinaryTree* pointer = root->right;
+            if(pointer->left == NULL)
+            {
+                pointer->left = root->left;
+                temp = pointer;
+            }
+            else
+            {
+                struct BinaryTree* minimal = pointer->left;
+                while (minimal ->left != NULL)
+                {
+                    pointer = minimal;
+                    minimal = pointer->left;
+                }
+                pointer->left = minimal->right;
+                minimal->left = root->left;
+                minimal->right = root->right;
+                temp = pointer;
+            }
+        }
+        free(root);
+        return temp;
+    }
+    else if (compareNumber == root->item)
+        root->left = deleteItem(root->left, compareNumber);
+    else
+        root->right = deleteItem(root->left, compareNumber);
+    return root;
+
+}
